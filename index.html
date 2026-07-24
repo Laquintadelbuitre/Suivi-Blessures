@@ -290,7 +290,7 @@
           <ellipse cx="82" cy="370" rx="16" ry="10" class="zone-shape growth" data-zone="talon" />
           <ellipse cx="118" cy="370" rx="16" ry="10" class="zone-shape growth" data-zone="talon" />
         </svg>
-        <p class="zone-legend">Contour pointillé <span class="dash"></span> = zone de croissance à surveiller (Osgood-Schlatter, Sever, apophysites, rachis)</p>
+        <p class="zone-legend">Contour pointillé <span class="dash"></span> = zone de croissance à surveiller (apophysites, rachis)</p>
         <div class="selected-zone-label" id="mapSelectedLabel">Aucune zone sélectionnée</div>
       </div>
     </div>
@@ -367,28 +367,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1AFv80LuZ9lDI
 
 // Liste de l'effectif — à adapter
 const PLAYERS = [
-  "Hadi",
-  "Sebastien",
-  "Mickaël",
-  "Bakoutoubo",
-  "Sacha",
-  "Keys",
-  "Nourou",
-  "Yanis",
-  "Mathis",
-  "Ethan",
-  "Abdoul Karim",
-  "Jalil",
-  "Gabin",
-  "Adam",
-  "Kalifa",
-  "Bilel",
-  "Pablo",
-  "Melih",
-  "Issam",
-  "Emir",
-  "Loan",
-  "Sarah"
+  "Hadi","Sebastien","Mickaël","Bakoutoubo","Sacha","Keys","Nourou",
+  "Yanis","Mathis","Ethan","Abdoul Karim","Jalil","Gabin","Adam",
+  "Kalifa","Bilel","Pablo","Melih","Issam","Emir","Loan","Sarah"
 ];
 
 // Zones anatomiques : id -> {label, growth}
@@ -401,11 +382,11 @@ const ZONES = {
   hanche_bassin:   {label:"Hanche / Bassin", growth:true},
   ischio:          {label:"Ischio-jambiers", growth:false},
   cuisse:          {label:"Cuisse / Quadriceps", growth:false},
-  genou_tta:       {label:"Genou — avant (TTA / Osgood-Schlatter)", growth:true},
+  genou_tta:       {label:"Genou — avant (tubérosité tibiale antérieure)", growth:true},
   genou_autre:     {label:"Genou — autre (ligament, ménisque…)", growth:false},
   tibia_mollet:    {label:"Tibia / Mollet", growth:false},
   cheville:        {label:"Cheville", growth:false},
-  talon:           {label:"Talon (arrière calcanéen / Sever)", growth:true},
+  talon:           {label:"Talon (arrière calcanéen)", growth:true},
   pied:            {label:"Pied", growth:false},
   autre:           {label:"Autre / non listé", growth:false}
 };
