@@ -226,10 +226,20 @@
     background:var(--turf-dim); color:var(--ink-soft);
   }
   .hist-badge.recidive{background:var(--clay-soft); color:var(--clay); font-weight:700;}
+  .hist-badge.repris{background:var(--sage-soft); color:var(--sage); font-weight:700;}
+  .hist-badge.closed-badge{background:var(--sage); color:#fff; font-weight:700;}
   .empty-state{color:var(--ink-soft); font-size:13px; text-align:center; padding:16px 0;}
   .refresh-link{
     font-family:var(--ink-mono); font-size:11px; color:var(--ink-soft); text-decoration:underline;
     background:none; border:none; cursor:pointer; padding:0; float:right;
+  }
+  .close-action{display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+  .close-error{
+    width:100%; text-align:right; font-size:11px; color:var(--clay); font-weight:600; margin-top:2px;
+  }
+  .hist-item.closed-ok{
+    background:var(--sage-soft); border-radius:10px; padding-left:8px; padding-right:8px;
+    transition:background-color .3s;
   }
 </style>
 </head>
@@ -704,7 +714,7 @@ async function loadHistory(){
       let badge = r.zoneCroissance ? 'croissance' : '';
       let badgeClass = '';
       if(r.recidive){ badge='⚠ récidive'; badgeClass='recidive'; }
-      else if(r.statut==='Repris'){ badge='✓ repris le '+r.dateFinReelle; }
+      else if(r.statut==='Repris'){ badge='✓ repris le '+r.dateFinReelle; badgeClass='repris'; }
       return `
       <div class="hist-item">
         <div>
@@ -727,12 +737,12 @@ function renderOpenInjuries(rows){
   const open = rows.filter(r=> r.statut === 'En cours');
   if(!open.length){ openEl.innerHTML = '<p class="empty-state">Aucune blessure en cours 🎉</p>'; return; }
   openEl.innerHTML = open.map(r=>`
-    <div class="hist-item" data-id="${r.id}">
+    <div class="hist-item" data-id="${r.id||''}" data-joueur="${r.joueur}" data-zone="${r.zone}" data-date="${r.date}">
       <div>
         <div class="hist-main">${r.joueur} — ${r.zoneLabel||r.zone}</div>
         <div class="hist-sub">Blessé le ${r.date} · intensité ${r.intensite}/5 · ${r.type}</div>
       </div>
-      <div style="display:flex; gap:6px; align-items:center;">
+      <div class="close-action">
         <input type="date" class="close-date" value="${todayStr()}">
         <button type="button" class="chip close-btn">Retour ✓</button>
       </div>
@@ -744,19 +754,40 @@ document.getElementById('openList').addEventListener('click', async (e)=>{
   const btn = e.target.closest('.close-btn');
   if(!btn) return;
   const item = btn.closest('.hist-item');
-  const id = item.dataset.id;
   const dateFin = item.querySelector('.close-date').value;
+  const payload = {
+    action: 'close',
+    id: item.dataset.id || undefined,
+    dateFin,
+    joueur: item.dataset.joueur,
+    zone: item.dataset.zone,
+    date: item.dataset.date
+  };
   btn.disabled = true; btn.textContent = '…';
   try{
-    await fetch(APPS_SCRIPT_URL, {
+    const res = await fetch(APPS_SCRIPT_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({ action:'close', id, dateFin })
+      body: JSON.stringify(payload)
     });
-    loadHistory();
+    const data = await res.json();
+    if(!data.ok){
+      throw new Error(data.error || "échec de l'enregistrement");
+    }
+    // confirmation visuelle verte avant de retirer la ligne
+    item.classList.add('closed-ok');
+    const actionEl = item.querySelector('.close-action');
+    actionEl.innerHTML = '<span class="hist-badge closed-badge">✓ Repris</span>';
+    setTimeout(()=>{ loadHistory(); }, 900);
   }catch(err){
     btn.disabled = false; btn.textContent = 'Retour ✓';
-    alert("Erreur lors de l'enregistrement du retour : " + err.message);
+    let errEl = item.querySelector('.close-error');
+    if(!errEl){
+      errEl = document.createElement('div');
+      errEl.className = 'close-error';
+      item.querySelector('.close-action').appendChild(errEl);
+    }
+    errEl.textContent = "Échec : " + err.message;
   }
 });
 
