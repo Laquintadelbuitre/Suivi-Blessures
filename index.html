@@ -282,12 +282,13 @@
           <rect x="40" y="144" width="20" height="34" rx="8" class="zone-shape" data-zone="poignet_main" />
           <rect x="140" y="144" width="20" height="34" rx="8" class="zone-shape" data-zone="poignet_main" />
           <rect x="68" y="140" width="64" height="50" rx="14" class="zone-shape growth" data-zone="hanche_bassin" />
+          <ellipse cx="100" cy="184" rx="9" ry="13" class="zone-shape" data-zone="adducteurs" />
           <rect x="70" y="192" width="26" height="62" rx="12" class="zone-shape" data-zone="cuisse" />
           <rect x="104" y="192" width="26" height="62" rx="12" class="zone-shape" data-zone="cuisse" />
           <circle cx="83" cy="262" r="15" class="zone-shape growth" data-zone="genou_tta" />
           <circle cx="117" cy="262" r="15" class="zone-shape growth" data-zone="genou_tta" />
-          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
-          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
+          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia" />
+          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia" />
           <ellipse cx="82" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="118" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="82" cy="368" rx="16" ry="9" class="zone-shape" data-zone="pied" />
@@ -304,8 +305,8 @@
           <rect x="104" y="192" width="26" height="62" rx="12" class="zone-shape" data-zone="ischio" />
           <circle cx="83" cy="262" r="15" class="zone-shape" data-zone="genou_autre" />
           <circle cx="117" cy="262" r="15" class="zone-shape" data-zone="genou_autre" />
-          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
-          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
+          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="mollet" />
+          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="mollet" />
           <ellipse cx="82" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="118" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="82" cy="370" rx="16" ry="10" class="zone-shape growth" data-zone="talon" />
@@ -403,12 +404,13 @@
           <rect x="40" y="144" width="20" height="34" rx="8" class="zone-shape" data-zone="poignet_main" />
           <rect x="140" y="144" width="20" height="34" rx="8" class="zone-shape" data-zone="poignet_main" />
           <rect x="68" y="140" width="64" height="50" rx="14" class="zone-shape growth" data-zone="hanche_bassin" />
+          <ellipse cx="100" cy="184" rx="9" ry="13" class="zone-shape" data-zone="adducteurs" />
           <rect x="70" y="192" width="26" height="62" rx="12" class="zone-shape" data-zone="cuisse" />
           <rect x="104" y="192" width="26" height="62" rx="12" class="zone-shape" data-zone="cuisse" />
           <circle cx="83" cy="262" r="15" class="zone-shape growth" data-zone="genou_tta" />
           <circle cx="117" cy="262" r="15" class="zone-shape growth" data-zone="genou_tta" />
-          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
-          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
+          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia" />
+          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia" />
           <ellipse cx="82" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="118" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="82" cy="368" rx="16" ry="9" class="zone-shape" data-zone="pied" />
@@ -425,8 +427,8 @@
           <rect x="104" y="192" width="26" height="62" rx="12" class="zone-shape" data-zone="ischio" />
           <circle cx="83" cy="262" r="15" class="zone-shape" data-zone="genou_autre" />
           <circle cx="117" cy="262" r="15" class="zone-shape" data-zone="genou_autre" />
-          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
-          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="tibia_mollet" />
+          <rect x="70" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="mollet" />
+          <rect x="106" y="280" width="24" height="55" rx="10" class="zone-shape" data-zone="mollet" />
           <ellipse cx="82" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="118" cy="345" rx="14" ry="10" class="zone-shape" data-zone="cheville" />
           <ellipse cx="82" cy="370" rx="16" ry="10" class="zone-shape growth" data-zone="talon" />
@@ -469,11 +471,13 @@ const ZONES = {
   poignet_main:    {label:"Poignet / Main", growth:false},
   dos_rachis:      {label:"Dos / Rachis", growth:true},
   hanche_bassin:   {label:"Hanche / Bassin", growth:true},
+  adducteurs:      {label:"Adducteurs / aine", growth:false},
   ischio:          {label:"Ischio-jambiers", growth:false},
-  cuisse:          {label:"Cuisse / Quadriceps", growth:false},
+  cuisse:          {label:"Quadriceps", growth:false},
   genou_tta:       {label:"Genou — avant (tubérosité tibiale antérieure)", growth:true},
   genou_autre:     {label:"Genou — autre (ligament, ménisque…)", growth:false},
-  tibia_mollet:    {label:"Tibia / Mollet", growth:false},
+  tibia:           {label:"Tibia (périostite / choc)", growth:false},
+  mollet:          {label:"Mollet (triceps sural)", growth:false},
   cheville:        {label:"Cheville", growth:false},
   talon:           {label:"Talon (arrière calcanéen)", growth:true},
   pied:            {label:"Pied", growth:false},
