@@ -213,6 +213,10 @@
   .hist-item{
     display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
     padding:10px 0; border-bottom:1px solid var(--turf-dim); font-size:13.5px;
+    flex-wrap:wrap;
+  }
+  .close-date{
+    width:132px; padding:6px 8px; font-size:12px; border-radius:8px;
   }
   .hist-item:last-child{border-bottom:none;}
   .hist-main{font-weight:700;}
@@ -376,6 +380,11 @@
   <p class="status-msg" id="statusMsg"></p>
 
   <div class="card" style="margin-top:22px;">
+    <h2>Retours à valider</h2>
+    <div id="openList"><p class="empty-state">Chargement…</p></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
     <h2>Historique récent <button class="refresh-link" id="refreshHist">↻ actualiser</button></h2>
     <div id="histList"><p class="empty-state">Chargement…</p></div>
   </div>
@@ -610,6 +619,7 @@ document.getElementById('submitBtn').addEventListener('click', async ()=>{
   if(!state.who){ return showStatus("Indique qui saisit (Moi / Tom).", false); }
 
   const payload = {
+    id: 'inj-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     date, joueur,
     zone: state.zone, zoneLabel: ZONES[state.zone].label, zoneCroissance: !!ZONES[state.zone].growth,
     intensite: state.intensity,
@@ -660,18 +670,29 @@ function resetForm(){
   document.getElementById('cause').value='';
 }
 
-// --- history / recurrence ---
+// --- history / recurrence / retours ---
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
 async function loadHistory(){
   const el = document.getElementById('histList');
+  const openEl = document.getElementById('openList');
   if(APPS_SCRIPT_URL.includes("COLLER_ICI")){
     el.innerHTML = '<p class="empty-state">Configure l\'URL Apps Script pour afficher l\'historique.</p>';
+    openEl.innerHTML = '<p class="empty-state">Configure l\'URL Apps Script.</p>';
     return;
   }
   el.innerHTML = '<p class="empty-state">Chargement…</p>';
+  openEl.innerHTML = '<p class="empty-state">Chargement…</p>';
   try{
     const res = await fetch(APPS_SCRIPT_URL + '?action=list');
     const rows = await res.json();
-    if(!rows.length){ el.innerHTML='<p class="empty-state">Aucun signalement pour le moment.</p>'; return; }
+    allInjuriesCache = rows; // réutilisé par la page "Historique par joueur"
+
+    if(!rows.length){
+      el.innerHTML='<p class="empty-state">Aucun signalement pour le moment.</p>';
+      openEl.innerHTML='<p class="empty-state">Aucune blessure en cours.</p>';
+      return;
+    }
 
     // recurrence: same player+zone within 21 days of another entry
     rows.forEach((r,i)=>{
@@ -679,19 +700,66 @@ async function loadHistory(){
         && Math.abs((new Date(r.date)-new Date(other.date))/86400000) <= 21 && new Date(other.date) < new Date(r.date));
     });
 
-    el.innerHTML = rows.slice(0,15).map(r=>`
+    el.innerHTML = rows.slice(0,15).map(r=>{
+      let badge = r.zoneCroissance ? 'croissance' : '';
+      let badgeClass = '';
+      if(r.recidive){ badge='⚠ récidive'; badgeClass='recidive'; }
+      else if(r.statut==='Repris'){ badge='✓ repris le '+r.dateFinReelle; }
+      return `
       <div class="hist-item">
         <div>
           <div class="hist-main">${r.joueur} — ${r.zoneLabel||r.zone}</div>
           <div class="hist-sub">${r.date} · intensité ${r.intensite}/5 · ${r.type} · ${r.dureeJours<0?'saison/inconnu':r.dureeJours+' j'} · saisi par ${r.saisiPar}</div>
         </div>
-        <span class="hist-badge ${r.recidive?'recidive':''}">${r.recidive?'⚠ récidive':(r.zoneCroissance?'croissance':'')}</span>
-      </div>
-    `).join('');
+        <span class="hist-badge ${badgeClass}">${badge}</span>
+      </div>`;
+    }).join('');
+
+    renderOpenInjuries(rows);
   }catch(err){
     el.innerHTML = '<p class="empty-state">Impossible de charger l\'historique.</p>';
+    openEl.innerHTML = '<p class="empty-state">Impossible de charger les retours.</p>';
   }
 }
+
+function renderOpenInjuries(rows){
+  const openEl = document.getElementById('openList');
+  const open = rows.filter(r=> r.statut === 'En cours');
+  if(!open.length){ openEl.innerHTML = '<p class="empty-state">Aucune blessure en cours 🎉</p>'; return; }
+  openEl.innerHTML = open.map(r=>`
+    <div class="hist-item" data-id="${r.id}">
+      <div>
+        <div class="hist-main">${r.joueur} — ${r.zoneLabel||r.zone}</div>
+        <div class="hist-sub">Blessé le ${r.date} · intensité ${r.intensite}/5 · ${r.type}</div>
+      </div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <input type="date" class="close-date" value="${todayStr()}">
+        <button type="button" class="chip close-btn">Retour ✓</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('openList').addEventListener('click', async (e)=>{
+  const btn = e.target.closest('.close-btn');
+  if(!btn) return;
+  const item = btn.closest('.hist-item');
+  const id = item.dataset.id;
+  const dateFin = item.querySelector('.close-date').value;
+  btn.disabled = true; btn.textContent = '…';
+  try{
+    await fetch(APPS_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'close', id, dateFin })
+    });
+    loadHistory();
+  }catch(err){
+    btn.disabled = false; btn.textContent = 'Retour ✓';
+    alert("Erreur lors de l'enregistrement du retour : " + err.message);
+  }
+});
+
 document.getElementById('refreshHist').addEventListener('click', loadHistory);
 loadHistory();
 
